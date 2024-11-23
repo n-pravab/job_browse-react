@@ -7,12 +7,16 @@ const JobListings = ({ isHome = false }) => {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const baseUrl = import.meta.env.VITE_BASE_URL;
   useEffect(() => {
     const fetchJobs = async () => {
-      const apiUrl = isHome ? "/api/jobs?_limit=3" : "/api/jobs";
+      const apiUrl = isHome ? "?_limit=3" : "/";
 
       try {
-        const res = await fetch(apiUrl);
+        const res = await fetch(baseUrl + apiUrl);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
         const data = await res.json();
         setJobs(data);
       } catch (error) {
@@ -36,7 +40,7 @@ const JobListings = ({ isHome = false }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {jobs.map((job) => (
-              <JobListing key={job.id} job={job} />
+              <JobListing key={job._id} job={job} />
             ))}
           </div>
         )}

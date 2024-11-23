@@ -1,24 +1,44 @@
-import { useState } from "react";
-import { useLoaderData, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 const EditJobPage = ({ updateJobSubmit }) => {
-  const job = useLoaderData();
-
-  const [title, setTitle] = useState(job.title);
-  const [description, setDescription] = useState(job.description);
-  const [type, setType] = useState(job.type);
-  const [salary, setSalary] = useState(job.salary);
-  const [location, setLocation] = useState(job.location);
-  const [companyName, setCompanyName] = useState(job.company.name);
-  const [companyDescription, setCompanyDescription] = useState(
-    job.company.description
-  );
-  const [contactEmail, setContactEmail] = useState(job.company.contactEmail);
-  const [contactPhone, setContactPhone] = useState(job.company.contactPhone);
-
   const navigate = useNavigate();
   const { id } = useParams();
+  const [job, setJob] = useState(null);
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [type, setType] = useState("");
+  const [salary, setSalary] = useState("");
+  const [location, setLocation] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [companyDescription, setCompanyDescription] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const baseURL = import.meta.env.VITE_BASE_URL;
+        const res = await fetch(`${baseURL}/${id}`);
+        const data = await res.json();
+        setJob(data);
+        setTitle(data.title);
+        setDescription(data.description);
+        setType(data.type);
+        setSalary(data.salary);
+        setLocation(data.location);
+        setCompanyName(data.company.name);
+        setCompanyDescription(data.company.description);
+        setContactEmail(data.company.contactEmail);
+        setContactPhone(data.company.contactPhone);
+      } catch (error) {
+        console.error("Error fetching job data:", error);
+      }
+    };
+    fetchJob();
+  }, [id]);
 
   const submitForm = (e) => {
     e.preventDefault();

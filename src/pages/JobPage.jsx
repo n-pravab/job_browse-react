@@ -1,19 +1,27 @@
-// import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { FaArrowLeft } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
-import {
-  useParams,
-  useLoaderData,
-  NavLink,
-  useNavigate,
-} from "react-router-dom";
+import { useParams, NavLink, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-// import Spinner from "../components/Spinner";
 
 const JobPage = ({ deleteJob }) => {
   const { id } = useParams();
-  const job = useLoaderData();
+  const [job, setJob] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchJob = async () => {
+      try {
+        const baseURL = import.meta.env.VITE_BASE_URL;
+        const res = await fetch(`${baseURL}/${id}`);
+        const data = await res.json();
+        setJob(data);
+      } catch (error) {
+        console.error("Error fetching job data:", error);
+      }
+    };
+    fetchJob();
+  }, [id]);
 
   const onDeleteClick = async (jobId) => {
     const confirm = window.confirm("Are you sure you want to delete this job?");
@@ -22,6 +30,10 @@ const JobPage = ({ deleteJob }) => {
     toast.success("Job deleted successfully");
     navigate("/jobs");
   };
+
+  if (!job) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <>
@@ -94,13 +106,13 @@ const JobPage = ({ deleteJob }) => {
               <div className="bg-white p-6 rounded-lg shadow-md mt-6">
                 <h3 className="text-xl font-bold mb-6">Manage Job</h3>
                 <NavLink
-                  to={`/edit-job/${job.id}`}
+                  to={`/edit-job/${job._id}`}
                   className="bg-indigo-500 hover:bg-indigo-600 text-white text-center font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
                 >
                   Edit Job
                 </NavLink>
                 <button
-                  onClick={() => onDeleteClick(job.id)}
+                  onClick={() => onDeleteClick(job._id)}
                   className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline mt-4 block"
                 >
                   Delete Job
@@ -113,31 +125,5 @@ const JobPage = ({ deleteJob }) => {
     </>
   );
 };
-// const [job, setJob] = useState(null);
-// const [loading, setLoading] = useState(true);
 
-// useEffect(() => {
-//   const fetchJob = async () => {
-//     try {
-//       const res = await fetch(`/api/jobs/${id}`);
-//       const data = await res.json();
-//       console.log("data", data);
-//       setJob(data);
-//     } catch (error) {
-//       console.error("error found in this place ", error);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-//   fetchJob();
-// }, []);
-
-// return loading ? <Spinner /> : <h2>{job.title}</h2>;
-
-const jobLoader = async ({ params }) => {
-  const res = await fetch(`/api/jobs/${params.id}`);
-  const data = await res.json();
-  return data;
-};
-
-export { JobPage as default, jobLoader };
+export default JobPage;

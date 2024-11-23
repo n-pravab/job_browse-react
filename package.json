@@ -8,9 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "vite",
-    "server": "json-server --watch src/jobs.json --port 3001"
+    "start": "vite"
   },
+  "proxy": "http://localhost:5050",
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
